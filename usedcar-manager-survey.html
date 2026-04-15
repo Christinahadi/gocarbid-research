@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoCarBid — Used Car Manager Survey</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --paper: #f5f0e8;
+    --accent: #c8401a;
+    --accent2: #c8401a;
+    --muted: #6b6560;
+    --rule: #d4cec4;
+    --field-bg: #fffdf7;
+    --tag-bg: #e8e2d8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  .page { max-width: 820px; margin: 0 auto; padding: 60px 60px 80px; background: var(--paper); min-height: 100vh; }
+
+  /* HEADER */
+  .header { display: grid; grid-template-columns: 1fr auto; align-items: end; border-bottom: 3px solid var(--ink); padding-bottom: 20px; margin-bottom: 36px; gap: 20px; }
+  .brand { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 4px; color: var(--accent); margin-bottom: 6px; }
+  .doc-title { font-family: 'Bebas Neue', sans-serif; font-size: 42px; line-height: 0.95; letter-spacing: 1px; }
+  .doc-subtitle { font-size: 13px; color: var(--muted); font-weight: 400; margin-top: 8px; }
+  .header-meta { text-align: right; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); line-height: 1.8; }
+
+  /* INTAKE */
+  .intake { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; background: var(--ink); color: var(--paper); padding: 20px 24px; margin-bottom: 40px; }
+  .intake-field label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; display: block; margin-bottom: 6px; }
+  .intake-field input { background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.3); color: var(--paper); font-family: 'DM Sans', sans-serif; font-size: 14px; width: 100%; padding: 4px 0; outline: none; }
+  .intake-field input::placeholder { opacity: 0.4; }
+
+  /* PROGRESS */
+  .progress-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 40px; }
+  .prog-item { text-align: center; }
+  .prog-bar { height: 4px; background: var(--rule); margin-bottom: 6px; }
+  .prog-bar.done { background: var(--accent); }
+  .prog-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+
+  /* SECTION */
+  .section { margin-bottom: 44px; }
+  .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+  .section-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; line-height: 1; color: var(--rule); }
+  .section-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; background: var(--accent); color: white; padding: 3px 8px; display: inline-block; margin-bottom: 4px; }
+  .section-tag.red { background: var(--accent); }
+  .section-tag.dark { background: var(--ink); }
+  .section-tag.neutral { background: var(--muted); }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px; }
+
+  /* QUESTION */
+  .question { margin-bottom: 24px; padding-left: 20px; border-left: 2px solid var(--rule); }
+  .question.highlight { border-left-color: var(--accent); background: rgba(200,64,26,0.04); padding: 14px 20px; }
+  .question.highlight { border-left-color: var(--accent); background: rgba(200,64,26,0.04); padding: 14px 20px; }
+  .q-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; display: flex; gap: 8px; align-items: center; }
+  .q-badge { background: var(--tag-bg); padding: 1px 6px; border-radius: 2px; font-size: 9px; }
+  .q-badge.key { background: var(--accent); color: white; }
+  .q-badge.key { background: var(--accent); color: white; }
+  .q-text { font-size: 15px; font-weight: 500; line-height: 1.5; margin-bottom: 10px; }
+  .q-note { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 10px; line-height: 1.5; }
+
+  textarea { width: 100%; border: 1px solid var(--rule); background: var(--field-bg); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 300; color: var(--ink); padding: 10px 12px; resize: vertical; outline: none; line-height: 1.6; transition: border-color 0.2s; }
+  textarea:focus { border-color: var(--accent); }
+
+  .options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+  .option { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.4; cursor: pointer; }
+  .option input[type="checkbox"], .option input[type="radio"] { margin-top: 2px; accent-color: var(--accent); width: 15px; height: 15px; flex-shrink: 0; }
+  .other-input { border: none; border-bottom: 1px solid var(--rule); width: 200px; outline: none; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 0 4px; background: transparent; }
+
+  .divider { border: none; border-top: 1px dashed var(--rule); margin: 32px 0; }
+
+  .callout { background: var(--ink); color: var(--paper); padding: 20px 24px; margin: 20px 0 28px; font-size: 13px; line-height: 1.7; }
+  .callout strong { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 1px; display: block; margin-bottom: 6px; color: #f5c842; }
+
+  .story-box { border: 1.5px solid var(--ink); padding: 16px 20px; margin-top: 10px; background: var(--field-bg); }
+  .story-box label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 8px; }
+
+  .inline-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px; }
+  .inline-field label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 4px; }
+  .inline-field input { width: 100%; border: 1px solid var(--rule); background: var(--field-bg); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 8px 10px; outline: none; transition: border-color 0.2s; }
+  .inline-field input:focus { border-color: var(--accent); }
+
+  /* SCALE */
+  .scale-row { margin-top: 16px; }
+  .scale-row-label { font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+  .scale { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .scale-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+  .scale-options { display: flex; gap: 6px; }
+  .scale-btn { width: 36px; height: 36px; border: 1.5px solid var(--rule); background: var(--field-bg); font-family: 'DM Mono', monospace; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; color: var(--ink); }
+  .scale-btn:hover { border-color: var(--accent); background: rgba(200,64,26,0.08); }
+  .scale-btn.selected { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* SUBMIT */
+  .submit-wrap { margin-top: 48px; text-align: center; }
+  .submit-btn { background: var(--accent); color: white; border: none; padding: 18px 60px; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; cursor: pointer; transition: background 0.2s; width: 100%; }
+  .submit-btn:hover { background: #a83314; }
+  .submit-btn:disabled { background: var(--muted); cursor: not-allowed; }
+  .submit-note { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 12px; line-height: 1.7; }
+
+  /* SUCCESS */
+  .success-screen { display: none; text-align: center; padding: 80px 40px; }
+  .success-screen.visible { display: block; }
+  .success-icon { font-size: 60px; margin-bottom: 24px; }
+  .success-title { font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 2px; margin-bottom: 16px; color: var(--accent); }
+  .success-msg { font-size: 16px; color: var(--muted); max-width: 420px; margin: 0 auto; line-height: 1.7; }
+
+  /* FOOTER */
+  .footer { border-top: 3px solid var(--ink); margin-top: 60px; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; color: var(--accent); }
+  .footer-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); text-align: right; line-height: 1.8; }
+
+  @media (max-width: 600px) {
+    .page { padding: 30px 24px 60px; }
+    .header { grid-template-columns: 1fr; }
+    .header-meta { text-align: left; }
+    .intake { grid-template-columns: 1fr; }
+    .inline-fields { grid-template-columns: 1fr; }
+    .doc-title { font-size: 32px; }
+    .section-num { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="brand">GoCarBid · Field Research</div>
+      <div class="doc-title">Used Car<br>Manager<br>Survey</div>
+      <div class="doc-subtitle">Franchise Dealership · Auction Acquisition Intelligence · v1.0</div>
+    </div>
+    <div class="header-meta">
+      Confidential<br>Research Use Only<br>April 2026<br><br>Est. 15 min
+    </div>
+  </div>
+
+  <!-- SUCCESS SCREEN -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✓</div>
+    <div class="success-title">Thank You!</div>
+    <div class="success-msg">Your responses have been submitted. We really appreciate your time — this directly shapes how GoCarBid is built for used car managers like you.</div>
+  </div>
+
+  <!--
+    FORMSPREE: Replace xlgagpre with your Formspree form ID
+  -->
+  <form id="surveyForm" action="https://formspree.io/f/xlgagpre" method="POST" onsubmit="handleSubmit(event)">
+
+    <div class="progress-strip">
+      <div class="prog-item"><div class="prog-bar done"></div><div class="prog-label">Profile</div></div>
+      <div class="prog-item"><div class="prog-bar done"></div><div class="prog-label">Process</div></div>
+      <div class="prog-item"><div class="prog-bar done"></div><div class="prog-label">Recon</div></div>
+      <div class="prog-item"><div class="prog-bar done"></div><div class="prog-label">Financial</div></div>
+      <div class="prog-item"><div class="prog-bar done"></div><div class="prog-label">Tool Fit</div></div>
+    </div>
+
+    <div class="intake">
+      <div class="intake-field"><label>Your Name (optional)</label><input type="text" name="respondent_name" placeholder="First name is fine"></div>
+      <div class="intake-field"><label>Date</label><input type="text" name="date" placeholder="MM / DD / YYYY"></div>
+      <div class="intake-field"><label>How are we speaking?</label><input type="text" name="format" placeholder="Phone / Email / In-person"></div>
+    </div>
+
+    <!-- S1: PROFILE -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">01</div>
+        <div class="section-info">
+          <div class="section-tag dark">Dealer Profile</div>
+          <div class="section-title">About Your Role</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q1.1</div>
+        <div class="q-text">What is your role at the dealership?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="role" value="Used Car Manager"> Used Car Manager</label>
+          <label class="option"><input type="radio" name="role" value="Pre-Owned Director"> Pre-Owned Director</label>
+          <label class="option"><input type="radio" name="role" value="General Manager"> General Manager</label>
+          <label class="option"><input type="radio" name="role" value="Buyer / Acquisition Specialist"> Buyer / Acquisition Specialist</label>
+          <label class="option"><input type="radio" name="role" value="Other"> Other: <input type="text" name="role_other" class="other-input"></label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q1.2</div>
+        <div class="q-text">What franchise brand is your dealership?</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="brand" value="Ford / Lincoln"> Ford / Lincoln</label>
+          <label class="option"><input type="checkbox" name="brand" value="GM (Chevy, Buick, GMC, Cadillac)"> GM (Chevy, Buick, GMC, Cadillac)</label>
+          <label class="option"><input type="checkbox" name="brand" value="Stellantis (Chrysler, Dodge, Jeep, Ram)"> Stellantis (Chrysler, Dodge, Jeep, Ram)</label>
+          <label class="option"><input type="checkbox" name="brand" value="Toyota / Lexus"> Toyota / Lexus</label>
+          <label class="option"><input type="checkbox" name="brand" value="Honda / Acura"> Honda / Acura</label>
+          <label class="option"><input type="checkbox" name="brand" value="BMW / Mercedes / Audi"> BMW / Mercedes / Audi</label>
+          <label class="option"><input type="checkbox" name="brand" value="Other"> Other: <input type="text" name="brand_other" class="other-input"></label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q1.3</div>
+        <div class="q-text">How many used vehicles do you acquire at auction per month?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="monthly_volume" value="Under 10"> Under 10 units</label>
+          <label class="option"><input type="radio" name="monthly_volume" value="10-25"> 10–25 units</label>
+          <label class="option"><input type="radio" name="monthly_volume" value="25-50"> 25–50 units</label>
+          <label class="option"><input type="radio" name="monthly_volume" value="50+"> 50+ units</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q1.4</div>
+        <div class="q-text">Which auction channels do you primarily use?</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="channels" value="Manheim"> Manheim</label>
+          <label class="option"><input type="checkbox" name="channels" value="ADESA"> ADESA</label>
+          <label class="option"><input type="checkbox" name="channels" value="ACV Auctions (online)"> ACV Auctions (online)</label>
+          <label class="option"><input type="checkbox" name="channels" value="OPENLANE / OVE"> OPENLANE / OVE</label>
+          <label class="option"><input type="checkbox" name="channels" value="Dealer trade / direct wholesale"> Dealer trade / direct wholesale</label>
+          <label class="option"><input type="checkbox" name="channels" value="Manufacturer programs (CPO returns, lease returns)"> Manufacturer programs (CPO, lease returns)</label>
+          <label class="option"><input type="checkbox" name="channels" value="Other"> Other: <input type="text" name="channels_other" class="other-input"></label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q1.5</div>
+        <div class="q-text">What software tools do you currently use for used car operations?</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="current_tools" value="vAuto"> vAuto</label>
+          <label class="option"><input type="checkbox" name="current_tools" value="DealerSocket"> DealerSocket</label>
+          <label class="option"><input type="checkbox" name="current_tools" value="Dealertrack"> Dealertrack</label>
+          <label class="option"><input type="checkbox" name="current_tools" value="CDK Drive"> CDK Drive</label>
+          <label class="option"><input type="checkbox" name="current_tools" value="Reynolds & Reynolds"> Reynolds & Reynolds</label>
+          <label class="option"><input type="checkbox" name="current_tools" value="Lotpop"> Lotpop</label>
+          <label class="option"><input type="checkbox" name="current_tools" value="Spreadsheets only"> Spreadsheets only</label>
+          <label class="option"><input type="checkbox" name="current_tools" value="Other"> Other: <input type="text" name="tools_other" class="other-input"></label>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- S2: BIDDING PROCESS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">02</div>
+        <div class="section-info">
+          <div class="section-tag">Bidding Process</div>
+          <div class="section-title">How Do You Acquire?</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q2.1</div>
+        <div class="q-text">Walk me through how you decide what to bid on a used vehicle at auction.</div>
+        <textarea name="bid_process" rows="5" placeholder="Describe your steps — what data do you look at, who do you consult, what's your process?"></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q2.2</div>
+        <div class="q-text">What tools or data sources do you use to estimate reconditioning cost before bidding?</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="recon_method" value="Experience / gut feel"> Experience / gut feel</label>
+          <label class="option"><input type="checkbox" name="recon_method" value="Auction condition report"> Auction condition report</label>
+          <label class="option"><input type="checkbox" name="recon_method" value="Call service department"> Call service department</label>
+          <label class="option"><input type="checkbox" name="recon_method" value="vAuto or similar tool"> vAuto or similar tool</label>
+          <label class="option"><input type="checkbox" name="recon_method" value="Look up parts prices manually"> Look up parts prices manually</label>
+          <label class="option"><input type="checkbox" name="recon_method" value="Flat recon budget per unit"> Flat recon budget per unit</label>
+        </div>
+        <textarea name="recon_method_notes" rows="2" placeholder="Any additional detail..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q2.3</div>
+        <div class="q-text">Do you have a set reconditioning budget per unit approved by management?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="recon_budget" value="Yes - strict limit"> Yes — strict limit I cannot exceed</label>
+          <label class="option"><input type="radio" name="recon_budget" value="Yes - soft guideline"> Yes — soft guideline with flexibility</label>
+          <label class="option"><input type="radio" name="recon_budget" value="No - case by case"> No — I approve each case individually</label>
+          <label class="option"><input type="radio" name="recon_budget" value="No - GM approves"> No — GM approves all recon spend</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q2.4</div>
+        <div class="q-text">What information do you wish you had at bid time that you currently don't?</div>
+        <textarea name="missing_info" rows="4" placeholder="What would make you more confident or accurate?"></textarea>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- S3: RECON & PARTS PAIN -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">03</div>
+        <div class="section-info">
+          <div class="section-tag">Recon & Parts Pain</div>
+          <div class="section-title">Where Does It Break Down?</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Interviewer Note</strong>
+        This is the most important section. Let them tell the full story. Ask "what happened next?" and "how long did that take?" Focus on real examples, not hypotheticals.
+      </div>
+
+      <div class="question highlight">
+        <div class="q-label">Q3.1 <span class="q-badge key">KEY</span></div>
+        <div class="q-text">Tell me about the last time a parts backorder or recon delay significantly hurt your margin on a used unit. What happened?</div>
+        <div class="q-note">Include: vehicle year/make/model, the part, where you sourced it, how long it took, what it cost in floor plan and lost margin.</div>
+        <div class="story-box">
+          <label>Full story</label>
+          <textarea name="backorder_story" rows="8" placeholder="Year / Make / Model:&#10;Part needed:&#10;Where sourced / tried to source:&#10;How long it sat:&#10;Impact on margin:&#10;&#10;What happened:"></textarea>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q3.2</div>
+        <div class="q-text">Where does your service department source parts for used car recon?</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="parts_source" value="OEM parts department (in-house)"> OEM parts department (in-house)</label>
+          <label class="option"><input type="checkbox" name="parts_source" value="Aftermarket distributors"> Aftermarket distributors</label>
+          <label class="option"><input type="checkbox" name="parts_source" value="Salvage / used parts (Car-Part, yards)"> Salvage / used parts (Car-Part, yards)</label>
+          <label class="option"><input type="checkbox" name="parts_source" value="eBay"> eBay</label>
+          <label class="option"><input type="checkbox" name="parts_source" value="Outside body shop or vendor"> Outside body shop or vendor</label>
+          <label class="option"><input type="checkbox" name="parts_source" value="Other"> Other: <input type="text" name="parts_source_other" class="other-input"></label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q3.3</div>
+        <div class="q-text">Are there specific makes or models you've learned to avoid at auction because parts or recon are unpredictable?</div>
+        <textarea name="makes_to_avoid" rows="3" placeholder="e.g. 'We stopped buying Stellantis products after 2018 because recon costs are too unpredictable...'"></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q3.4</div>
+        <div class="q-text">How often does a used unit sit in recon longer than expected due to parts availability?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="delay_freq" value="Rarely - a few times a year"> Rarely — a few times a year</label>
+          <label class="option"><input type="radio" name="delay_freq" value="Occasionally - monthly"> Occasionally — about once a month</label>
+          <label class="option"><input type="radio" name="delay_freq" value="Regularly - weekly"> Regularly — almost every week</label>
+          <label class="option"><input type="radio" name="delay_freq" value="Constantly - ongoing problem"> Constantly — it's an ongoing problem</label>
+        </div>
+      </div>
+
+      <div class="question highlight">
+        <div class="q-label">Q3.5 <span class="q-badge key">KEY</span></div>
+        <div class="q-text">If you had known the recon cost and parts availability BEFORE bidding — how would that have changed your decision?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="alt_action" value="Passed on the unit entirely"> Passed on the unit entirely</label>
+          <label class="option"><input type="radio" name="alt_action" value="Bid lower to protect margin"> Bid lower to protect margin</label>
+          <label class="option"><input type="radio" name="alt_action" value="Flagged it to GM before bidding"> Flagged it to GM before bidding</label>
+          <label class="option"><input type="radio" name="alt_action" value="Set a hard avoid rule for that make/model"> Set a hard avoid rule for that make/model</label>
+          <label class="option"><input type="radio" name="alt_action" value="Other"> Other: <input type="text" name="alt_action_other" class="other-input"></label>
+        </div>
+        <textarea name="alt_action_notes" rows="2" placeholder="Any additional detail..."></textarea>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- S4: FINANCIAL -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">04</div>
+        <div class="section-info">
+          <div class="section-tag neutral">Financial & Accountability</div>
+          <div class="section-title">The Numbers That Matter</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q4.1</div>
+        <div class="q-text">What is your target front-end gross per used unit?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="target_gross" value="Under $1,000"> Under $1,000</label>
+          <label class="option"><input type="radio" name="target_gross" value="$1,000-$2,000"> $1,000–$2,000</label>
+          <label class="option"><input type="radio" name="target_gross" value="$2,000-$3,000"> $2,000–$3,000</label>
+          <label class="option"><input type="radio" name="target_gross" value="$3,000+"> $3,000+</label>
+          <label class="option"><input type="radio" name="target_gross" value="Set by GM / varies"> Set by GM / varies by unit</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q4.2</div>
+        <div class="q-text">What is your target days-to-frontline — and what actually happens?</div>
+        <div class="inline-fields">
+          <div class="inline-field"><label>Target days to frontline</label><input type="text" name="target_days" placeholder="e.g. 7 days"></div>
+          <div class="inline-field"><label>Actual average</label><input type="text" name="actual_days" placeholder="e.g. 14 days"></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q4.3</div>
+        <div class="q-text">What does your dealership's holding cost run per vehicle per day (floor plan + overhead)?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="holding_cost" value="Under $30/day"> Under $30/day</label>
+          <label class="option"><input type="radio" name="holding_cost" value="$30-$50/day"> $30–$50/day</label>
+          <label class="option"><input type="radio" name="holding_cost" value="$50-$80/day"> $50–$80/day</label>
+          <label class="option"><input type="radio" name="holding_cost" value="$80+/day"> $80+/day</label>
+          <label class="option"><input type="radio" name="holding_cost" value="I don't track this"> I don't track this</label>
+        </div>
+      </div>
+
+      <div class="question highlight">
+        <div class="q-label">Q4.4 <span class="q-badge key">KEY</span></div>
+        <div class="q-text">Are you measured / held accountable by your GM for used car recon time or days-to-frontline? How does that affect your decisions at auction?</div>
+        <textarea name="accountability" rows="5" placeholder="How does management measure your performance on used car acquisition and recon?"></textarea>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- S5: TOOL FIT -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">05</div>
+        <div class="section-info">
+          <div class="section-tag">Tool Fit</div>
+          <div class="section-title">What Would Actually Help?</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q5.1</div>
+        <div class="q-text">What's missing from your current tools (vAuto, DMS, etc.) when it comes to auction acquisition decisions?</div>
+        <textarea name="tool_gaps" rows="4" placeholder="What can't your current tools tell you that you wish they could?"></textarea>
+      </div>
+
+      <div class="question highlight">
+        <div class="q-label">Q5.2 <span class="q-badge key">KEY</span></div>
+        <div class="q-text">If before you bid, a tool showed you real-time parts availability, estimated recon cost, and a risk flag for makes with known parts problems — would that change how you bid?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="tool_value" value="Yes - would use heavily, change my bids"> Yes — I'd use that heavily, it would change my bids</label>
+          <label class="option"><input type="radio" name="tool_value" value="Yes - but only if accurate and fast"> Yes — but only if it's accurate and fast</label>
+          <label class="option"><input type="radio" name="tool_value" value="Maybe - depends how it integrates with vAuto"> Maybe — depends if it integrates with vAuto/DMS</label>
+          <label class="option"><input type="radio" name="tool_value" value="Probably not - already have enough tools"> Probably not — I already have enough tools</label>
+        </div>
+        <textarea name="tool_value_notes" rows="3" placeholder="Reasoning..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q5.3</div>
+        <div class="q-text">Would you need your GM or dealer principal to approve a new tool, or can you make that decision yourself?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="purchase_authority" value="I can approve tools under $100/month"> I can approve tools under $100/month myself</label>
+          <label class="option"><input type="radio" name="purchase_authority" value="I can recommend but GM approves"> I can recommend but GM has to approve</label>
+          <label class="option"><input type="radio" name="purchase_authority" value="All tools go through dealer principal"> All tools go through the dealer principal</label>
+          <label class="option"><input type="radio" name="purchase_authority" value="Part of a group - corporate approves"> Part of a dealer group — corporate approves</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q5.4</div>
+        <div class="q-text">Rate how valuable each feature would be at bid time (1 = not useful · 5 = essential)</div>
+
+        <input type="hidden" name="scale_parts_availability" id="val_av">
+        <input type="hidden" name="scale_recon_cost_estimate" id="val_rc">
+        <input type="hidden" name="scale_backorder_risk_flag" id="val_rf">
+        <input type="hidden" name="scale_days_to_frontline_impact" id="val_df">
+
+        <div class="scale-row">
+          <div class="scale-row-label">Real-time parts availability signal (in-stock vs. backordered)</div>
+          <div class="scale">
+            <span class="scale-label">Not useful</span>
+            <div class="scale-options">
+              <button type="button" class="scale-btn" onclick="setScale('av',1,this)">1</button>
+              <button type="button" class="scale-btn" onclick="setScale('av',2,this)">2</button>
+              <button type="button" class="scale-btn" onclick="setScale('av',3,this)">3</button>
+              <button type="button" class="scale-btn" onclick="setScale('av',4,this)">4</button>
+              <button type="button" class="scale-btn" onclick="setScale('av',5,this)">5</button>
+            </div>
+            <span class="scale-label">Essential</span>
+          </div>
+        </div>
+
+        <div class="scale-row">
+          <div class="scale-row-label">Automated recon cost estimate from VIN + damage notes</div>
+          <div class="scale">
+            <span class="scale-label">Not useful</span>
+            <div class="scale-options">
+              <button type="button" class="scale-btn" onclick="setScale('rc',1,this)">1</button>
+              <button type="button" class="scale-btn" onclick="setScale('rc',2,this)">2</button>
+              <button type="button" class="scale-btn" onclick="setScale('rc',3,this)">3</button>
+              <button type="button" class="scale-btn" onclick="setScale('rc',4,this)">4</button>
+              <button type="button" class="scale-btn" onclick="setScale('rc',5,this)">5</button>
+            </div>
+            <span class="scale-label">Essential</span>
+          </div>
+        </div>
+
+        <div class="scale-row">
+          <div class="scale-row-label">Make/model backorder risk flag (e.g. "Stellantis — high parts risk")</div>
+          <div class="scale">
+            <span class="scale-label">Not useful</span>
+            <div class="scale-options">
+              <button type="button" class="scale-btn" onclick="setScale('rf',1,this)">1</button>
+              <button type="button" class="scale-btn" onclick="setScale('rf',2,this)">2</button>
+              <button type="button" class="scale-btn" onclick="setScale('rf',3,this)">3</button>
+              <button type="button" class="scale-btn" onclick="setScale('rf',4,this)">4</button>
+              <button type="button" class="scale-btn" onclick="setScale('rf',5,this)">5</button>
+            </div>
+            <span class="scale-label">Essential</span>
+          </div>
+        </div>
+
+        <div class="scale-row">
+          <div class="scale-row-label">Days-to-frontline impact calculator (holding cost on margin)</div>
+          <div class="scale">
+            <span class="scale-label">Not useful</span>
+            <div class="scale-options">
+              <button type="button" class="scale-btn" onclick="setScale('df',1,this)">1</button>
+              <button type="button" class="scale-btn" onclick="setScale('df',2,this)">2</button>
+              <button type="button" class="scale-btn" onclick="setScale('df',3,this)">3</button>
+              <button type="button" class="scale-btn" onclick="setScale('df',4,this)">4</button>
+              <button type="button" class="scale-btn" onclick="setScale('df',5,this)">5</button>
+            </div>
+            <span class="scale-label">Essential</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q5.5</div>
+        <div class="q-text">What would your dealership pay per month for a tool that measurably reduced recon delays and improved used car gross?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="willingness_to_pay" value="Nothing - covered by DMS"> Nothing — should be covered by our DMS</label>
+          <label class="option"><input type="radio" name="willingness_to_pay" value="Under $100/month"> Under $100/month</label>
+          <label class="option"><input type="radio" name="willingness_to_pay" value="$100-$300/month"> $100–$300/month</label>
+          <label class="option"><input type="radio" name="willingness_to_pay" value="$300-$500/month"> $300–$500/month</label>
+          <label class="option"><input type="radio" name="willingness_to_pay" value="$500+/month if ROI is clear"> $500+/month if ROI is clearly demonstrated</label>
+        </div>
+        <textarea name="pricing_notes" rows="2" placeholder="Any hesitation or context..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q5.6</div>
+        <div class="q-text">Anything else about used car acquisition, recon, or auction bidding that you wish was easier or better?</div>
+        <textarea name="open_feedback" rows="5" placeholder="Open feedback — anything goes..."></textarea>
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-wrap">
+      <button type="submit" class="submit-btn" id="submitBtn">Submit My Responses</button>
+      <div class="submit-note">
+        Your answers go directly to the GoCarBid research team.<br>
+        No account needed. Responses are confidential.
+      </div>
+    </div>
+
+  </form>
+
+  <div class="footer">
+    <div class="footer-brand">GoCarBid</div>
+    <div class="footer-meta">Used Car Manager Research · Confidential<br>Internal Use Only · v1.0 · 2026</div>
+  </div>
+
+</div>
+
+<script>
+  function setScale(group, value, btn) {
+    btn.closest('.scale-options').querySelectorAll('.scale-btn')
+      .forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('val_' + group).value = value;
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const form = document.getElementById('surveyForm');
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (res.ok) {
+        form.style.display = 'none';
+        document.getElementById('successScreen').classList.add('visible');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit My Responses';
+        alert('Something went wrong. Please try again.');
+      }
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit My Responses';
+      alert('Network error. Please check your connection and try again.');
+    }
+  }
+</script>
+
+</body>
+</html>
