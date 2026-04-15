@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoCarBid Research — Dealer Intelligence Program</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --ink: #0f0f0f;
+    --accent: #c8401a;
+    --muted: #5a5450;
+    --rule: #d4cec4;
+    --card: #ffffff;
+    --card2: #0f0f0f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 40px; }
+
+  nav {
+    padding: 32px 0 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .nav-brand { display: flex; align-items: center; gap: 12px; }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--accent); }
+  .nav-divider { width: 1px; height: 18px; background: var(--rule); }
+  .nav-sub { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+  .nav-coming { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--rule); text-transform: uppercase; }
+
+  .hero { padding: 64px 0 52px; }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-eyebrow::after { content: ''; display: block; width: 40px; height: 1px; background: var(--accent); }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 8vw, 96px);
+    line-height: 0.92;
+    letter-spacing: 1px;
+    margin-bottom: 28px;
+    color: var(--ink);
+  }
+
+  .hero-title span { color: var(--accent); }
+
+  .hero-desc {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 560px;
+    margin-bottom: 44px;
+    font-weight: 400;
+  }
+
+  .hero-stats { display: flex; gap: 36px; flex-wrap: wrap; }
+  .stat { border-left: 3px solid var(--accent); padding-left: 14px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 36px; line-height: 1; color: var(--ink); }
+  .stat-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding-top: 52px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .survey-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 52px; }
+
+  .survey-card {
+    background: var(--card);
+    color: var(--ink);
+    padding: 28px 32px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 20px;
+    text-decoration: none;
+    border: 1.5px solid var(--rule);
+    border-left: 4px solid var(--accent);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .survey-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.12); transform: translateY(-2px); }
+
+  .card-status {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .card-title { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 1px; color: var(--ink); margin-bottom: 6px; line-height: 1; }
+  .card-audience { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .card-desc { font-size: 14px; color: var(--muted); line-height: 1.6; font-weight: 400; }
+  .card-meta { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+
+  .card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: rgba(200,64,26,0.08);
+    color: var(--accent);
+    padding: 4px 10px;
+    border: 1px solid rgba(200,64,26,0.2);
+  }
+
+  .card-tag.neutral { background: rgba(90,84,80,0.08); color: var(--muted); border-color: var(--rule); }
+  .card-arrow { font-size: 28px; color: var(--accent); flex-shrink: 0; }
+
+  .why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 60px; }
+  .why-item { background: var(--card2); padding: 28px 24px; }
+  .why-num { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: rgba(255,255,255,0.1); line-height: 1; margin-bottom: 10px; }
+  .why-title { font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #ffffff; }
+  .why-desc { font-size: 13px; color: #bbbbbb; line-height: 1.6; }
+
+  footer { border-top: 2px solid var(--ink); padding: 28px 0 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+  .footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--accent); }
+  .footer-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; line-height: 1.8; text-align: right; }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 0 24px; }
+    .hero { padding: 40px 0 36px; }
+    .why-grid { grid-template-columns: 1fr; }
+    .survey-card { grid-template-columns: 1fr; }
+    .card-arrow { display: none; }
+    .hero-stats { gap: 20px; }
+    footer { flex-direction: column; align-items: flex-start; }
+    .footer-meta { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav>
+    <div class="nav-brand">
+      <div class="nav-logo">GoCarBid</div>
+      <div class="nav-divider"></div>
+      <div class="nav-sub">Research</div>
+    </div>
+    <span class="nav-coming">gocarbid.ai — coming soon</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Dealer Intelligence Program</div>
+    <h1 class="hero-title">We build with<br><span>dealers,</span><br>not for them.</h1>
+    <p class="hero-desc">GoCarBid is an auction intelligence platform for independent dealers and wholesalers. Before we build, we listen. This is where we conduct research — your insight shapes every feature we ship.</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">15<span style="font-size:18px;color:var(--accent)"> min</span></div>
+        <div class="stat-label">Per survey</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">100<span style="font-size:18px;color:var(--accent)">%</span></div>
+        <div class="stat-label">Confidential</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Login required</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Active Research — 2 Surveys Open</div>
+
+  <div class="survey-grid">
+
+    <!-- SURVEY 1: INDEPENDENT DEALER -->
+    <a class="survey-card" href="/gocarbid-dealer-survey">
+      <div>
+        <div class="card-status"><div class="status-dot"></div>Open — accepting responses</div>
+        <div class="card-audience">Independent Dealers & Wholesalers</div>
+        <div class="card-title">Dealer Interview Survey</div>
+        <div class="card-desc">How do independent dealers and wholesalers make bid decisions at auction? What information is missing? What does a parts backorder cost you in floor plan and margin?</div>
+        <div class="card-meta">
+          <div class="card-tag">Parts availability</div>
+          <div class="card-tag">Bid strategy</div>
+          <div class="card-tag">Floor plan</div>
+          <div class="card-tag neutral">Est. 15 min</div>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <!-- SURVEY 2: USED CAR MANAGER -->
+    <a class="survey-card" href="/usedcar-manager-survey">
+      <div>
+        <div class="card-status"><div class="status-dot"></div>Open — accepting responses</div>
+        <div class="card-audience">Franchise Dealership — Used Car Managers</div>
+        <div class="card-title">Used Car Manager Survey</div>
+        <div class="card-desc">How do used car managers at franchise dealerships make auction acquisition decisions? How does recon time, parts delays, and days-to-frontline impact your gross per unit?</div>
+        <div class="card-meta">
+          <div class="card-tag">Recon efficiency</div>
+          <div class="card-tag">Parts availability</div>
+          <div class="card-tag">Days to frontline</div>
+          <div class="card-tag neutral">Est. 15 min</div>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+  </div>
+
+  <div class="section-label">Why We Do This</div>
+
+  <div class="why-grid">
+    <div class="why-item">
+      <div class="why-num">01</div>
+      <div class="why-title">Dealers know best</div>
+      <div class="why-desc">No algorithm beats the instinct of someone who's bought 500 cars at auction. We learn from you before we build for you.</div>
+    </div>
+    <div class="why-item">
+      <div class="why-num">02</div>
+      <div class="why-title">Your pain = our roadmap</div>
+      <div class="why-desc">Every survey response directly influences which features get built next. If it hurts you, it's on our list.</div>
+    </div>
+    <div class="why-item">
+      <div class="why-num">03</div>
+      <div class="why-title">No fluff, no spam</div>
+      <div class="why-desc">We ask focused questions, respect your time, and never share your responses with third parties. Ever.</div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-brand">GoCarBid</div>
+    <div class="footer-meta">Dealer Intelligence Program<br>research.gocarbid.ai · 2026</div>
+  </footer>
+
+</div>
+</body>
+</html>
