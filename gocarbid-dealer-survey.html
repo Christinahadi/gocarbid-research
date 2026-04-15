@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoCarBid — Dealer Research Interview</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --paper: #f5f0e8;
+    --accent: #c8401a;
+    --accent2: #1a4fc8;
+    --muted: #6b6560;
+    --rule: #d4cec4;
+    --field-bg: #fffdf7;
+    --tag-bg: #e8e2d8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; }
+  .page { max-width: 820px; margin: 0 auto; padding: 60px 60px 80px; background: var(--paper); min-height: 100vh; }
+
+
+  /* HEADER */
+  .header { display: grid; grid-template-columns: 1fr auto; align-items: end; border-bottom: 3px solid var(--ink); padding-bottom: 20px; margin-bottom: 36px; gap: 20px; }
+  .brand { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 4px; color: var(--accent); margin-bottom: 6px; }
+  .doc-title { font-family: 'Bebas Neue', sans-serif; font-size: 42px; line-height: 0.95; letter-spacing: 1px; }
+  .doc-subtitle { font-size: 13px; color: var(--muted); font-weight: 400; margin-top: 8px; }
+  .header-meta { text-align: right; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); line-height: 1.8; }
+
+  /* INTAKE */
+  .intake { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; background: var(--ink); color: var(--paper); padding: 20px 24px; margin-bottom: 40px; }
+  .intake-field label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; display: block; margin-bottom: 6px; }
+  .intake-field input { background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.3); color: var(--paper); font-family: 'DM Sans', sans-serif; font-size: 14px; width: 100%; padding: 4px 0; outline: none; }
+  .intake-field input::placeholder { opacity: 0.4; }
+
+  /* PROGRESS */
+  .progress-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 40px; }
+  .prog-item { text-align: center; }
+  .prog-bar { height: 4px; background: var(--rule); margin-bottom: 6px; }
+  .prog-bar.done { background: var(--accent); }
+  .prog-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+
+  /* SECTION */
+  .section { margin-bottom: 44px; }
+  .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+  .section-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; line-height: 1; color: var(--rule); }
+  .section-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; background: var(--accent); color: white; padding: 3px 8px; display: inline-block; margin-bottom: 4px; }
+  .section-tag.blue { background: var(--accent2); }
+  .section-tag.dark { background: var(--ink); }
+  .section-tag.neutral { background: var(--muted); }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px; }
+
+  /* QUESTION */
+  .question { margin-bottom: 24px; padding-left: 20px; border-left: 2px solid var(--rule); }
+  .question.highlight { border-left-color: var(--accent); background: rgba(200,64,26,0.04); padding: 14px 20px; }
+  .question.highlight-blue { border-left-color: var(--accent2); background: rgba(26,79,200,0.04); padding: 14px 20px; }
+  .q-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; display: flex; gap: 8px; align-items: center; }
+  .q-badge { background: var(--tag-bg); padding: 1px 6px; border-radius: 2px; font-size: 9px; }
+  .q-badge.key { background: var(--accent); color: white; }
+  .q-text { font-size: 15px; font-weight: 500; line-height: 1.5; margin-bottom: 10px; }
+  .q-note { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 10px; line-height: 1.5; }
+
+  textarea { width: 100%; border: 1px solid var(--rule); background: var(--field-bg); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 300; color: var(--ink); padding: 10px 12px; resize: vertical; outline: none; line-height: 1.6; transition: border-color 0.2s; }
+  textarea:focus { border-color: var(--accent); }
+
+  .options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+  .option { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.4; cursor: pointer; }
+  .option input[type="checkbox"], .option input[type="radio"] { margin-top: 2px; accent-color: var(--accent); width: 15px; height: 15px; flex-shrink: 0; }
+  .other-input { border: none; border-bottom: 1px solid var(--rule); width: 200px; outline: none; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 0 4px; background: transparent; }
+
+  /* SCALE */
+  .scale-row { margin-top: 16px; }
+  .scale-row-label { font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+  .scale { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .scale-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+  .scale-options { display: flex; gap: 6px; }
+  .scale-btn { width: 36px; height: 36px; border: 1.5px solid var(--rule); background: var(--field-bg); font-family: 'DM Mono', monospace; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; color: var(--ink); }
+  .scale-btn:hover { border-color: var(--accent); background: rgba(200,64,26,0.08); }
+  .scale-btn.selected { background: var(--accent); border-color: var(--accent); color: white; }
+
+  .divider { border: none; border-top: 1px dashed var(--rule); margin: 32px 0; }
+
+  .callout { background: var(--ink); color: var(--paper); padding: 20px 24px; margin: 20px 0 28px; font-size: 13px; line-height: 1.7; }
+  .callout strong { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 1px; display: block; margin-bottom: 6px; color: #f5c842; }
+
+  .story-box { border: 1.5px solid var(--ink); padding: 16px 20px; margin-top: 10px; background: var(--field-bg); }
+  .story-box label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 8px; }
+
+  .inline-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px; }
+  .inline-field label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 4px; }
+  .inline-field input { width: 100%; border: 1px solid var(--rule); background: var(--field-bg); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 8px 10px; outline: none; transition: border-color 0.2s; }
+  .inline-field input:focus { border-color: var(--accent); }
+
+  /* SUBMIT */
+  .submit-wrap { margin-top: 48px; text-align: center; }
+  .submit-btn { background: var(--accent); color: white; border: none; padding: 18px 60px; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; cursor: pointer; transition: background 0.2s; width: 100%; }
+  .submit-btn:hover { background: #a83314; }
+  .submit-btn:disabled { background: var(--muted); cursor: not-allowed; }
+  .submit-note { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 12px; line-height: 1.7; }
+
+  /* SUCCESS */
+  .success-screen { display: none; text-align: center; padding: 80px 40px; }
+  .success-screen.visible { display: block; }
+  .success-icon { font-size: 60px; margin-bottom: 24px; }
+  .success-title { font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 2px; margin-bottom: 16px; color: var(--accent); }
+  .success-msg { font-size: 16px; color: var(--muted); max-width: 420px; margin: 0 auto; line-height: 1.7; }
+
+  /* FOOTER */
+  .footer { border-top: 3px solid var(--ink); margin-top: 60px; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; color: var(--accent); }
+  .footer-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); text-align: right; line-height: 1.8; }
+
+  @media (max-width: 600px) {
+    .page { padding: 30px 24px 60px; }
+    .header { grid-template-columns: 1fr; }
+    .header-meta { text-align: left; }
+    .intake { grid-template-columns: 1fr; }
+    .inline-fields { grid-template-columns: 1fr; }
+    .doc-title { font-size: 32px; }
+    .section-num { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="brand">GoCarBid · Field Research</div>
+      <div class="doc-title">Dealer<br>Interview<br>Survey</div>
+      <div class="doc-subtitle">Parts Availability & Auction Bidding · v1.0</div>
+    </div>
+    <div class="header-meta">
+      Confidential<br>Research Use Only<br>April 2026<br><br>Est. 15 min
+    </div>
+  </div>
+
+  <!-- SUCCESS SCREEN -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✓</div>
+    <div class="success-title">Thank You!</div>
+    <div class="success-msg">Your responses have been submitted. We really appreciate your time — this directly shapes how GoCarBid is built for dealers like you.</div>
+  </div>
+
+  <!--
+    FORMSPREE endpoint — do not edit
+    Example: action="https://formspree.io/f/xpwzabcd"
+  -->
+  <form id="surveyForm" action="https://formspree.io/f/xrereejl" method="POST" onsubmit="handleSubmit(event)">
+
+    <div class="progress-strip">
+      <div class="prog-item"><div class="prog-bar done"></div><div class="prog-label">Profile</div></div>
+      <div class="prog-item"><div class="prog-bar done"></div><div class="prog-label">Process</div></div>
+      <div class="prog-item"><div class="prog-bar done"></div><div class="prog-label">Backorder</div></div>
+      <div class="prog-item"><div class="prog-bar done"></div><div class="prog-label">Financial</div></div>
+      <div class="prog-item"><div class="prog-bar done"></div><div class="prog-label">Tool Fit</div></div>
+    </div>
+
+    <div class="intake">
+      <div class="intake-field"><label>Your Name (optional)</label><input type="text" name="respondent_name" placeholder="First name is fine"></div>
+      <div class="intake-field"><label>Date</label><input type="text" name="date" placeholder="MM / DD / YYYY"></div>
+      <div class="intake-field"><label>How are we speaking?</label><input type="text" name="format" placeholder="Phone / Email / In-person"></div>
+    </div>
+
+    <!-- S1: PROFILE -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">01</div>
+        <div class="section-info">
+          <div class="section-tag dark">Dealer Profile</div>
+          <div class="section-title">About You</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q1.1</div>
+        <div class="q-text">What best describes how you operate?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="dealer_type" value="Independent dealership (retail lot)"> Independent dealership (retail lot)</label>
+          <label class="option"><input type="radio" name="dealer_type" value="Wholesale dealer / flipper"> Wholesale dealer / flipper (auction to auction)</label>
+          <label class="option"><input type="radio" name="dealer_type" value="Individual buyer (no formal lot)"> Individual buyer (no formal lot)</label>
+          <label class="option"><input type="radio" name="dealer_type" value="Dealer + wholesale hybrid"> Dealer + wholesale hybrid</label>
+          <label class="option"><input type="radio" name="dealer_type" value="Other"> Other: <input type="text" name="dealer_type_other" class="other-input"></label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q1.2</div>
+        <div class="q-text">How many vehicles do you buy per month at auction?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="monthly_volume" value="1-5"> 1–5 units</label>
+          <label class="option"><input type="radio" name="monthly_volume" value="6-15"> 6–15 units</label>
+          <label class="option"><input type="radio" name="monthly_volume" value="16-30"> 16–30 units</label>
+          <label class="option"><input type="radio" name="monthly_volume" value="30+"> 30+ units</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q1.3</div>
+        <div class="q-text">Which auction channels do you use? (Select all)</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="channels" value="Manheim"> Manheim</label>
+          <label class="option"><input type="checkbox" name="channels" value="ADESA"> ADESA</label>
+          <label class="option"><input type="checkbox" name="channels" value="ACV Auctions (online)"> ACV Auctions (online)</label>
+          <label class="option"><input type="checkbox" name="channels" value="OPENLANE / OVE"> OPENLANE / OVE</label>
+          <label class="option"><input type="checkbox" name="channels" value="Local independent auctions"> Local independent auctions</label>
+          <label class="option"><input type="checkbox" name="channels" value="Dealer-to-dealer direct"> Dealer-to-dealer direct</label>
+          <label class="option"><input type="checkbox" name="channels" value="Other"> Other: <input type="text" name="channels_other" class="other-input"></label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q1.4</div>
+        <div class="q-text">What vehicle types do you mostly target?</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="vehicle_types" value="Domestic trucks / SUVs"> Domestic trucks / SUVs</label>
+          <label class="option"><input type="checkbox" name="vehicle_types" value="Import sedans / hatchbacks"> Import sedans / hatchbacks</label>
+          <label class="option"><input type="checkbox" name="vehicle_types" value="Luxury vehicles"> Luxury vehicles</label>
+          <label class="option"><input type="checkbox" name="vehicle_types" value="High-mileage / budget ($3k-$8k)"> High-mileage / budget ($3k–$8k)</label>
+          <label class="option"><input type="checkbox" name="vehicle_types" value="Damaged / salvage title"> Damaged / salvage title</label>
+          <label class="option"><input type="checkbox" name="vehicle_types" value="No preference - opportunistic"> No preference — opportunistic</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q1.5</div>
+        <div class="q-text">Do you use floor plan financing?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="floorplan" value="Yes - heavily reliant"> Yes — heavily reliant on it</label>
+          <label class="option"><input type="radio" name="floorplan" value="Yes - selectively"> Yes — selectively</label>
+          <label class="option"><input type="radio" name="floorplan" value="No - cash only"> No — cash only</label>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- S2: PROCESS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">02</div>
+        <div class="section-info">
+          <div class="section-tag blue">Current Process</div>
+          <div class="section-title">How Do You Decide What to Bid?</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q2.1</div>
+        <div class="q-text">Walk me through what you do before you place a bid. What's your process?</div>
+        <textarea name="bid_process" rows="5" placeholder="Describe your steps..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q2.2</div>
+        <div class="q-text">How do you currently estimate repair costs before bidding?</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="repair_method" value="Experience / gut feel"> Experience / gut feel</label>
+          <label class="option"><input type="checkbox" name="repair_method" value="Call my shop / mechanic"> Call my shop / mechanic</label>
+          <label class="option"><input type="checkbox" name="repair_method" value="Look up parts prices on phone"> Look up parts prices on my phone</label>
+          <label class="option"><input type="checkbox" name="repair_method" value="Use a spreadsheet"> Use a spreadsheet</label>
+          <label class="option"><input type="checkbox" name="repair_method" value="Use an app or software"> Use an app or software</label>
+          <label class="option"><input type="checkbox" name="repair_method" value="I mostly don't - price to MMR and hope"> I mostly don't — price to MMR and hope</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q2.3</div>
+        <div class="q-text">How much time do you typically have to decide on a bid?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="bid_time" value="Under 60 seconds (live lane)"> Under 60 seconds (live auction lane)</label>
+          <label class="option"><input type="radio" name="bid_time" value="2-5 minutes"> 2–5 minutes</label>
+          <label class="option"><input type="radio" name="bid_time" value="5-15 minutes"> 5–15 minutes</label>
+          <label class="option"><input type="radio" name="bid_time" value="As long as needed (online / prebid)"> As long as I need (online, prebid)</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q2.4</div>
+        <div class="q-text">What information do you wish you had at bid time that you currently don't?</div>
+        <textarea name="missing_info" rows="4" placeholder="What would make you more confident bidding?"></textarea>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- S3: BACKORDER -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">03</div>
+        <div class="section-info">
+          <div class="section-tag">Parts & Backorder Pain</div>
+          <div class="section-title">The Margin Killer</div>
+        </div>
+      </div>
+
+      <div class="question highlight">
+        <div class="q-label">Q3.1 <span class="q-badge key">KEY</span></div>
+        <div class="q-text">Tell me about the last time a backorder or missing part killed your margin. What happened?</div>
+        <div class="q-note">Include: year/make/model, part needed, where you sourced it, how long it took, what it cost you.</div>
+        <div class="story-box">
+          <label>Tell the full story</label>
+          <textarea name="backorder_story" rows="8" placeholder="Year / Make / Model:&#10;Part needed:&#10;Where I tried to source it:&#10;How long it took:&#10;What it cost me in the end:&#10;&#10;What happened:"></textarea>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q3.2</div>
+        <div class="q-text">What category was that part?</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="part_category" value="Electronic module / control unit (ABS, TCM, ECM, BCM)"> Electronic module / control unit (ABS, TCM, ECM, BCM)</label>
+          <label class="option"><input type="checkbox" name="part_category" value="Structural / body panel"> Structural / body panel</label>
+          <label class="option"><input type="checkbox" name="part_category" value="Mechanical (engine or transmission)"> Mechanical (engine or transmission)</label>
+          <label class="option"><input type="checkbox" name="part_category" value="Interior trim or tech feature"> Interior trim or tech feature</label>
+          <label class="option"><input type="checkbox" name="part_category" value="Safety system (airbag, seatbelt)"> Safety system (airbag, seatbelt)</label>
+          <label class="option"><input type="checkbox" name="part_category" value="Lighting (headlight or taillight assembly)"> Lighting (headlight or taillight assembly)</label>
+          <label class="option"><input type="checkbox" name="part_category" value="Suspension / steering"> Suspension / steering</label>
+          <label class="option"><input type="checkbox" name="part_category" value="Other"> Other: <input type="text" name="part_category_other" class="other-input"></label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q3.3</div>
+        <div class="q-text">Where did you try to source the part?</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="part_source" value="OEM dealer parts department"> OEM dealer parts department</label>
+          <label class="option"><input type="checkbox" name="part_source" value="Aftermarket (RockAuto, AutoZone, etc.)"> Aftermarket (RockAuto, AutoZone, etc.)</label>
+          <label class="option"><input type="checkbox" name="part_source" value="Salvage yard (direct)"> Salvage yard (direct)</label>
+          <label class="option"><input type="checkbox" name="part_source" value="Car-Part.com"> Car-Part.com</label>
+          <label class="option"><input type="checkbox" name="part_source" value="eBay"> eBay</label>
+          <label class="option"><input type="checkbox" name="part_source" value="Facebook Marketplace / groups"> Facebook Marketplace / groups</label>
+          <label class="option"><input type="checkbox" name="part_source" value="Called around to shops"> Called around to multiple shops</label>
+          <label class="option"><input type="checkbox" name="part_source" value="Other"> Other: <input type="text" name="part_source_other" class="other-input"></label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q3.4</div>
+        <div class="q-text">How often does a car sit waiting on a hard-to-find part?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="backorder_freq" value="Rarely - 1-2 times a year"> Rarely — maybe 1–2 times a year</label>
+          <label class="option"><input type="radio" name="backorder_freq" value="Occasionally - few times per quarter"> Occasionally — a few times per quarter</label>
+          <label class="option"><input type="radio" name="backorder_freq" value="Regularly - at least once a month"> Regularly — at least once a month</label>
+          <label class="option"><input type="radio" name="backorder_freq" value="Constantly - one of my biggest problems"> Constantly — it's one of my biggest problems</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q3.5</div>
+        <div class="q-text">Are there specific makes or models you've learned to avoid because parts are hard to find?</div>
+        <textarea name="makes_to_avoid" rows="3" placeholder="e.g. 'I stay away from anything Chrysler after 2016...'"></textarea>
+      </div>
+
+      <div class="question highlight">
+        <div class="q-label">Q3.6 <span class="q-badge key">KEY</span></div>
+        <div class="q-text">If you had known the part would be hard to get BEFORE you bid — what would you have done differently?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="alt_action" value="Passed on the car entirely"> Passed on the car entirely</label>
+          <label class="option"><input type="radio" name="alt_action" value="Bid lower to leave more margin buffer"> Bid lower to leave more margin buffer</label>
+          <label class="option"><input type="radio" name="alt_action" value="Confirmed availability before bidding"> Confirmed part availability before bidding</label>
+          <label class="option"><input type="radio" name="alt_action" value="Set a hard pass rule for that make/model"> Set a hard pass rule for that make/model</label>
+          <label class="option"><input type="radio" name="alt_action" value="Other"> Other: <input type="text" name="alt_action_other" class="other-input"></label>
+        </div>
+        <textarea name="alt_action_notes" rows="2" placeholder="Any additional detail..."></textarea>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- S4: FINANCIAL -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">04</div>
+        <div class="section-info">
+          <div class="section-tag neutral">Financial Impact</div>
+          <div class="section-title">What Does It Actually Cost You?</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q4.1</div>
+        <div class="q-text">What's your typical target gross margin per unit?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="target_margin" value="Under $500"> Under $500</label>
+          <label class="option"><input type="radio" name="target_margin" value="$500-$1,000"> $500–$1,000</label>
+          <label class="option"><input type="radio" name="target_margin" value="$1,000-$2,000"> $1,000–$2,000</label>
+          <label class="option"><input type="radio" name="target_margin" value="$2,000-$3,500"> $2,000–$3,500</label>
+          <label class="option"><input type="radio" name="target_margin" value="$3,500+"> $3,500+</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q4.2</div>
+        <div class="q-text">Target days-to-flip vs. what actually happens?</div>
+        <div class="inline-fields">
+          <div class="inline-field"><label>Target days on lot</label><input type="text" name="target_days" placeholder="e.g. 14 days"></div>
+          <div class="inline-field"><label>Actual average</label><input type="text" name="actual_days" placeholder="e.g. 28 days"></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q4.3</div>
+        <div class="q-text">If a car sits an extra 2–3 weeks on a backordered part, how much margin does that eat?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="backorder_cost" value="Under $200 - not a big deal"> Under $200 — not a big deal</label>
+          <label class="option"><input type="radio" name="backorder_cost" value="$200-$500 - noticeable"> $200–$500 — noticeable</label>
+          <label class="option"><input type="radio" name="backorder_cost" value="$500-$1,000 - significant"> $500–$1,000 — significant</label>
+          <label class="option"><input type="radio" name="backorder_cost" value="$1,000+ - can wipe profit entirely"> $1,000+ — it can wipe the profit entirely</label>
+        </div>
+      </div>
+
+      <div class="question highlight-blue">
+        <div class="q-label">Q4.4 <span class="q-badge key">KEY</span></div>
+        <div class="q-text">Have you ever broken even or lost money on a car because of a parts delay? What happened?</div>
+        <textarea name="loss_story" rows="5" placeholder="Share what happened — numbers help if you remember them..."></textarea>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- S5: TOOL FIT -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">05</div>
+        <div class="section-info">
+          <div class="section-tag blue">Tool Fit</div>
+          <div class="section-title">What Would Actually Help You?</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q5.1</div>
+        <div class="q-text">How do you currently track your bids and watch units at an auction?</div>
+        <textarea name="current_tracking" rows="3" placeholder="e.g. run sheets, notes app, spreadsheet, memory..."></textarea>
+      </div>
+
+      <div class="question highlight">
+        <div class="q-label">Q5.2 <span class="q-badge key">KEY</span></div>
+        <div class="q-text">If before you bid, a tool showed whether parts are in stock or backordered, and flagged makes with known availability problems — would that change how you bid?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="tool_value" value="Yes - would use heavily, would change my bids"> Yes — I'd use that heavily, it would change my bids</label>
+          <label class="option"><input type="radio" name="tool_value" value="Yes - but only if fast and accurate"> Yes — but only if it was fast and accurate</label>
+          <label class="option"><input type="radio" name="tool_value" value="Maybe - depends how it works"> Maybe — depends on how it works</label>
+          <label class="option"><input type="radio" name="tool_value" value="Probably not - I trust my own process"> Probably not — I trust my own process</label>
+        </div>
+        <textarea name="tool_value_notes" rows="3" placeholder="Reasoning..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q5.3</div>
+        <div class="q-text">What would make you NOT trust a tool that gives parts availability info?</div>
+        <textarea name="trust_blockers" rows="3" placeholder="e.g. 'if it's wrong even once', 'if it's slow', 'if I have to enter too much'..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q5.4</div>
+        <div class="q-text">Rate how valuable each feature would be at bid time (1 = not useful · 5 = essential)</div>
+
+        <!-- Hidden inputs carry scale values into form submission -->
+        <input type="hidden" name="scale_parts_availability" id="val_av">
+        <input type="hidden" name="scale_max_bid_recommendation" id="val_mb">
+        <input type="hidden" name="scale_backorder_risk_flag" id="val_rf">
+        <input type="hidden" name="scale_floorplan_calculator" id="val_fp">
+
+        <div class="scale-row">
+          <div class="scale-row-label">Parts availability signal (in-stock vs. backordered)</div>
+          <div class="scale">
+            <span class="scale-label">Not useful</span>
+            <div class="scale-options">
+              <button type="button" class="scale-btn" onclick="setScale('av',1,this)">1</button>
+              <button type="button" class="scale-btn" onclick="setScale('av',2,this)">2</button>
+              <button type="button" class="scale-btn" onclick="setScale('av',3,this)">3</button>
+              <button type="button" class="scale-btn" onclick="setScale('av',4,this)">4</button>
+              <button type="button" class="scale-btn" onclick="setScale('av',5,this)">5</button>
+            </div>
+            <span class="scale-label">Essential</span>
+          </div>
+        </div>
+
+        <div class="scale-row">
+          <div class="scale-row-label">Max-bid recommendation based on repair cost + margin target</div>
+          <div class="scale">
+            <span class="scale-label">Not useful</span>
+            <div class="scale-options">
+              <button type="button" class="scale-btn" onclick="setScale('mb',1,this)">1</button>
+              <button type="button" class="scale-btn" onclick="setScale('mb',2,this)">2</button>
+              <button type="button" class="scale-btn" onclick="setScale('mb',3,this)">3</button>
+              <button type="button" class="scale-btn" onclick="setScale('mb',4,this)">4</button>
+              <button type="button" class="scale-btn" onclick="setScale('mb',5,this)">5</button>
+            </div>
+            <span class="scale-label">Essential</span>
+          </div>
+        </div>
+
+        <div class="scale-row">
+          <div class="scale-row-label">Make/model backorder risk flag (e.g. "Chrysler FCA — high parts risk")</div>
+          <div class="scale">
+            <span class="scale-label">Not useful</span>
+            <div class="scale-options">
+              <button type="button" class="scale-btn" onclick="setScale('rf',1,this)">1</button>
+              <button type="button" class="scale-btn" onclick="setScale('rf',2,this)">2</button>
+              <button type="button" class="scale-btn" onclick="setScale('rf',3,this)">3</button>
+              <button type="button" class="scale-btn" onclick="setScale('rf',4,this)">4</button>
+              <button type="button" class="scale-btn" onclick="setScale('rf',5,this)">5</button>
+            </div>
+            <span class="scale-label">Essential</span>
+          </div>
+        </div>
+
+        <div class="scale-row">
+          <div class="scale-row-label">Floor plan cost calculator (days-to-flip impact on margin)</div>
+          <div class="scale">
+            <span class="scale-label">Not useful</span>
+            <div class="scale-options">
+              <button type="button" class="scale-btn" onclick="setScale('fp',1,this)">1</button>
+              <button type="button" class="scale-btn" onclick="setScale('fp',2,this)">2</button>
+              <button type="button" class="scale-btn" onclick="setScale('fp',3,this)">3</button>
+              <button type="button" class="scale-btn" onclick="setScale('fp',4,this)">4</button>
+              <button type="button" class="scale-btn" onclick="setScale('fp',5,this)">5</button>
+            </div>
+            <span class="scale-label">Essential</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q5.5</div>
+        <div class="q-text">What would you pay per month for a tool that reliably helped you avoid bad bids?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="willingness_to_pay" value="Nothing - needs to be free"> Nothing — it needs to be free</label>
+          <label class="option"><input type="radio" name="willingness_to_pay" value="$20-$50/month"> $20–$50/month</label>
+          <label class="option"><input type="radio" name="willingness_to_pay" value="$50-$100/month"> $50–$100/month</label>
+          <label class="option"><input type="radio" name="willingness_to_pay" value="$100-$200/month"> $100–$200/month</label>
+          <label class="option"><input type="radio" name="willingness_to_pay" value="$200+/month if it really works"> More than $200/month if it really works</label>
+        </div>
+        <textarea name="pricing_notes" rows="2" placeholder="Any hesitation or reasoning..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">Q5.6</div>
+        <div class="q-text">Anything else about sourcing cars or managing parts that you wish was easier?</div>
+        <textarea name="open_feedback" rows="5" placeholder="Open feedback — anything goes..."></textarea>
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-wrap">
+      <button type="submit" class="submit-btn" id="submitBtn">Submit My Responses</button>
+      <div class="submit-note">
+        Your answers go directly to the GoCarBid research team.<br>
+        No account needed. Responses are confidential.
+      </div>
+    </div>
+
+  </form>
+
+  <div class="footer">
+    <div class="footer-brand">GoCarBid</div>
+    <div class="footer-meta">Dealer Research · Confidential<br>Internal Use Only · v1.0 · 2026</div>
+  </div>
+
+</div>
+
+<script>
+  // Scale rating buttons
+  function setScale(group, value, btn) {
+    // Deselect siblings in same group
+    btn.closest('.scale-options').querySelectorAll('.scale-btn')
+      .forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('val_' + group).value = value;
+  }
+
+  // Formspree async submission
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const form = document.getElementById('surveyForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (res.ok) {
+        form.style.display = 'none';
+        document.getElementById('successScreen').classList.add('visible');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit My Responses';
+        alert('Something went wrong. Please try again.');
+      }
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit My Responses';
+      alert('Network error. Please check your connection and try again.');
+    }
+  }
+</script>
+
+</body>
+</html>
